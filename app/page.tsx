@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import Image from 'next/image';
 import ProviderCard from './components/ProviderCard';
 import RefreshTimer from './components/RefreshTimer';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
@@ -61,19 +60,9 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-950 text-white">
       <header className="border-b border-gray-800/60 bg-gray-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Image
-              src="/PGH_Networks_Ver.png"
-              alt="PGH Networks"
-              width={120}
-              height={120}
-              className="object-contain"
-              priority
-            />
-            <div className="flex items-center gap-3">
-              <div className={`w-2.5 h-2.5 rounded-full ${overallCfg.dotColor} ${worstSeverity !== 'operational' ? 'animate-pulse' : ''}`} />
-              <h1 className="text-lg font-semibold tracking-tight">Service Status Dashboard</h1>
-            </div>
+          <div className="flex items-center gap-3">
+            <div className={`w-2.5 h-2.5 rounded-full ${overallCfg.dotColor} ${worstSeverity !== 'operational' ? 'animate-pulse' : ''}`} />
+            <h1 className="text-lg font-semibold tracking-tight">Service Status Dashboard</h1>
           </div>
           <RefreshTimer interval={REFRESH_INTERVAL} onRefresh={fetchAll} lastUpdated={lastUpdated} />
         </div>
