@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Current Service Disruptions",
+  title: "Service Status Dashboard",
   description: "Live outage monitor for AWS, Cloudflare, Microsoft 365, and Bandwidth",
 };
 

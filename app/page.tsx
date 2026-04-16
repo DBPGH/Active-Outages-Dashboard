@@ -65,14 +65,14 @@ export default function Dashboard() {
             <Image
               src="/PGH_Networks_Ver.png"
               alt="PGH Networks"
-              width={80}
-              height={80}
+              width={120}
+              height={120}
               className="object-contain"
               priority
             />
             <div className="flex items-center gap-3">
               <div className={`w-2.5 h-2.5 rounded-full ${overallCfg.dotColor} ${worstSeverity !== 'operational' ? 'animate-pulse' : ''}`} />
-              <h1 className="text-lg font-semibold tracking-tight">Current Service Disruptions</h1>
+              <h1 className="text-lg font-semibold tracking-tight">Service Status Dashboard</h1>
             </div>
           </div>
           <RefreshTimer interval={REFRESH_INTERVAL} onRefresh={fetchAll} lastUpdated={lastUpdated} />
