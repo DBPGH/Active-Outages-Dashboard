@@ -6,7 +6,7 @@ import ProviderCard from './components/ProviderCard';
 import RefreshTimer from './components/RefreshTimer';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 
-const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'teams', 'thread', 'connectwise'];
+const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'teams', 'thread', 'connectwise', 'hatz'];
 const ALL_PROVIDERS    = [...CORE_PROVIDERS];
 const REFRESH_INTERVAL = 60;
 
@@ -17,6 +17,7 @@ const PROVIDER_ICONS: Record<string, React.ReactNode> = {
   teams:      <span>🪟</span>,
   thread:     <span>🧵</span>,
   connectwise: <span>🔧</span>,
+  hatz:       <span>🤖</span>,
 };
 
 const INITIAL_STATE = Object.fromEntries(ALL_PROVIDERS.map(p => [p, null])) as Record<string, ProviderStatus | null>;
