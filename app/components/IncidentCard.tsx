@@ -38,22 +38,22 @@ export default function IncidentCard({ incident }: Props) {
   const cfg = SEVERITY_CONFIG[incident.impact];
 
   return (
-    <div className={`rounded-xl border ${cfg.borderColor} bg-gray-900/60 overflow-hidden`}>
+    <div className={`rounded-xl border ${cfg.borderColor} bg-white dark:bg-gray-900/60 overflow-hidden`}>
       {/* Header */}
       <button
         onClick={() => setExpanded(e => !e)}
-        className="w-full text-left p-4 hover:bg-white/[0.02] transition-colors"
+        className="w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0">
             <span className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${cfg.dotColor} ${incident.impact !== 'operational' ? 'animate-pulse' : ''}`} />
             <div className="min-w-0">
-              <h3 className="text-white font-medium text-sm leading-snug">{incident.name}</h3>
+              <h3 className="text-gray-900 dark:text-white font-medium text-sm leading-snug">{incident.name}</h3>
               <div className="flex flex-wrap gap-2 mt-1.5">
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cfg.badgeBg} ${cfg.textColor} border ${cfg.borderColor}`}>
                   {cfg.label}
                 </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-800 text-gray-300 border border-gray-700/50">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700/50">
                   {humanStatus(incident.status)}
                 </span>
               </div>
@@ -68,7 +68,7 @@ export default function IncidentCard({ incident }: Props) {
         {incident.affectedServices.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2 ml-5">
             {incident.affectedServices.slice(0, 5).map(s => (
-              <span key={s} className="px-1.5 py-0.5 rounded text-xs bg-gray-800/80 text-gray-400 border border-gray-700/40">
+              <span key={s} className="px-1.5 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-800/80 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700/40">
                 {s}
               </span>
             ))}
@@ -90,25 +90,25 @@ export default function IncidentCard({ incident }: Props) {
 
       {/* Expanded: update timeline */}
       {expanded && incident.updates.length > 0 && (
-        <div className="px-4 pb-4 border-t border-gray-700/40">
-          <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-3 mb-2">
+        <div className="px-4 pb-4 border-t border-gray-200 dark:border-gray-700/40">
+          <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-3 mb-2">
             Update Timeline
           </h4>
           <div className="space-y-3">
             {incident.updates.map((update, idx) => (
               <div key={update.id || idx} className="flex gap-3">
                 <div className="flex flex-col items-center">
-                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${idx === 0 ? cfg.dotColor : 'bg-gray-600'}`} />
+                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${idx === 0 ? cfg.dotColor : 'bg-gray-300 dark:bg-gray-600'}`} />
                   {idx < incident.updates.length - 1 && (
-                    <div className="w-px flex-1 bg-gray-700/50 mt-1" />
+                    <div className="w-px flex-1 bg-gray-200 dark:bg-gray-700/50 mt-1" />
                   )}
                 </div>
                 <div className="pb-2 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-gray-300">{humanStatus(update.status)}</span>
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{humanStatus(update.status)}</span>
                     <span className="text-xs text-gray-500">{formatDate(update.createdAt)}</span>
                   </div>
-                  <p className="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">{update.body}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed whitespace-pre-wrap">{update.body}</p>
                 </div>
               </div>
             ))}
@@ -117,13 +117,13 @@ export default function IncidentCard({ incident }: Props) {
       )}
 
       {expanded && incident.updates.length === 0 && (
-        <div className="px-4 pb-4 pt-3 border-t border-gray-700/40">
+        <div className="px-4 pb-4 pt-3 border-t border-gray-200 dark:border-gray-700/40">
           <p className="text-sm text-gray-500">No update details available.</p>
         </div>
       )}
 
       {incident.url && (
-        <div className={`px-4 py-2 border-t border-gray-700/40 ${cfg.bgColor}`}>
+        <div className={`px-4 py-2 border-t border-gray-200 dark:border-gray-700/40 ${cfg.bgColor}`}>
           <a
             href={incident.url}
             target="_blank"

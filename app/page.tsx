@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import ProviderCard from './components/ProviderCard';
 import RefreshTimer from './components/RefreshTimer';
+import ThemeToggle from './components/ThemeToggle';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 
 const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz'];
@@ -47,14 +48,17 @@ export default function Dashboard() {
   const overallCfg = SEVERITY_CONFIG[worstSeverity];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <header className="border-b border-gray-800/60 bg-gray-950/80 backdrop-blur sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white">
+      <header className="border-b border-gray-200 dark:border-gray-800/60 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-2.5 h-2.5 rounded-full ${overallCfg.dotColor} ${worstSeverity !== 'operational' ? 'animate-pulse' : ''}`} />
+            <div className={`w-2.5 h-2.5 rounded-full ${overallCfg.dotColor}`} />
             <h1 className="text-lg font-semibold tracking-tight">Service Status Dashboard</h1>
           </div>
-          <RefreshTimer interval={REFRESH_INTERVAL} onRefresh={fetchAll} lastUpdated={lastUpdated} />
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <RefreshTimer interval={REFRESH_INTERVAL} onRefresh={fetchAll} lastUpdated={lastUpdated} />
+          </div>
         </div>
       </header>
 
@@ -66,7 +70,7 @@ export default function Dashboard() {
               <div className={`w-3 h-3 rounded-full ${overallCfg.dotColor} ${worstSeverity !== 'operational' ? 'animate-pulse' : ''}`} />
               <div>
                 <p className={`font-semibold ${overallCfg.textColor}`}>{overallCfg.label}</p>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {totalIssues === 0
                     ? 'All monitored services are operating normally'
                     : `${totalIssues} active ${totalIssues === 1 ? 'issue' : 'issues'} across monitored services`}
@@ -98,7 +102,7 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <p className="text-center text-xs text-gray-600 mt-4">
+        <p className="text-center text-xs text-gray-400 dark:text-gray-600 mt-4">
           Data sourced from official provider status pages · Auto-refreshes every {REFRESH_INTERVAL}s
         </p>
       </main>

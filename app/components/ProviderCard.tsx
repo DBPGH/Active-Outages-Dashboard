@@ -11,15 +11,14 @@ interface Props {
 export default function ProviderCard({ status, loading }: Props) {
   if (loading || !status) {
     return (
-      <div className="relative rounded-xl border border-gray-700/50 bg-gray-900/60 p-4 animate-pulse">
+      <div className="relative rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-900/60 p-4 animate-pulse">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-9 h-9 rounded-lg bg-gray-700/60" />
           <div className="flex-1">
-            <div className="h-3.5 bg-gray-700/60 rounded w-20 mb-1.5" />
-            <div className="h-3 bg-gray-700/40 rounded w-14" />
+            <div className="h-3.5 bg-gray-200 dark:bg-gray-700/60 rounded w-20 mb-1.5" />
+            <div className="h-3 bg-gray-200 dark:bg-gray-700/40 rounded w-14" />
           </div>
         </div>
-        <div className="h-8 bg-gray-700/40 rounded-lg" />
+        <div className="h-8 bg-gray-200 dark:bg-gray-700/40 rounded-lg" />
       </div>
     );
   }
@@ -31,7 +30,7 @@ export default function ProviderCard({ status, loading }: Props) {
       <div
         className={`
           relative rounded-xl border p-4 transition-all duration-200 cursor-pointer
-          bg-gray-900/60 hover:bg-gray-900/90
+          bg-white dark:bg-gray-900/60 hover:bg-gray-50 dark:hover:bg-gray-900/90
           ${cfg.borderColor}
           hover:shadow-lg hover:scale-[1.02]
         `}
@@ -44,7 +43,7 @@ export default function ProviderCard({ status, loading }: Props) {
         <div className="relative flex items-start justify-between mb-3">
           <div className="flex items-center gap-2.5">
             <div>
-              <h2 className="text-white font-semibold text-sm leading-tight">{status.provider}</h2>
+              <h2 className="text-gray-900 dark:text-white font-semibold text-sm leading-tight">{status.provider}</h2>
               <div className={`flex items-center gap-1.5 mt-0.5 ${cfg.textColor}`}>
                 <span className={`inline-block w-1.5 h-1.5 rounded-full ${cfg.dotColor} ${status.severity !== 'operational' ? 'animate-pulse' : ''}`} />
                 <span className="text-xs font-medium">{cfg.label}</span>
@@ -60,7 +59,7 @@ export default function ProviderCard({ status, loading }: Props) {
             <span className={`text-xl font-bold leading-none ${cfg.textColor}`}>
               {status.activeCount}
             </span>
-            <span className="text-xs text-gray-400 mt-0.5">
+            <span className="text-xs text-gray-500 mt-0.5">
               {status.activeCount === 1 ? 'issue' : 'issues'}
             </span>
           </div>
@@ -75,7 +74,7 @@ export default function ProviderCard({ status, loading }: Props) {
             {status.incidents.slice(0, 1).map(inc => (
               <div key={inc.id} className="flex items-center gap-2 text-xs">
                 <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${SEVERITY_CONFIG[inc.impact].dotColor}`} />
-                <span className="text-gray-300 truncate">{inc.name}</span>
+                <span className="text-gray-700 dark:text-gray-300 truncate">{inc.name}</span>
               </div>
             ))}
             {status.incidents.length > 1 && (
@@ -90,7 +89,7 @@ export default function ProviderCard({ status, loading }: Props) {
           <p className="relative text-xs text-gray-500">All systems normal</p>
         )}
 
-        <div className="relative flex items-center justify-between mt-3 pt-2 border-t border-gray-700/40">
+        <div className="relative flex items-center justify-between mt-3 pt-2 border-t border-gray-200 dark:border-gray-700/40">
           <span className="text-xs text-gray-500">
             {new Date(status.lastUpdated).toLocaleTimeString()}
           </span>
