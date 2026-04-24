@@ -5,7 +5,6 @@ export default function BandwidthPage() {
     <ProviderDetailPage
       slug="bandwidth"
       providerName="Bandwidth"
-      icon={<span>📡</span>}
       statusPageUrl="https://status.bandwidth.com"
     />
   );

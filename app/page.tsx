@@ -5,19 +5,9 @@ import ProviderCard from './components/ProviderCard';
 import RefreshTimer from './components/RefreshTimer';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 
-const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'teams', 'thread', 'connectwise', 'hatz'];
+const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz'];
 const ALL_PROVIDERS    = [...CORE_PROVIDERS];
 const REFRESH_INTERVAL = 60;
-
-const PROVIDER_ICONS: Record<string, React.ReactNode> = {
-  aws:        <span>☁️</span>,
-  cloudflare: <span>🌐</span>,
-  bandwidth:  <span>📡</span>,
-  teams:      <span>🪟</span>,
-  thread:     <span>🧵</span>,
-  connectwise: <span>🔧</span>,
-  hatz:       <span>🤖</span>,
-};
 
 const INITIAL_STATE = Object.fromEntries(ALL_PROVIDERS.map(p => [p, null])) as Record<string, ProviderStatus | null>;
 
@@ -104,7 +94,7 @@ export default function Dashboard() {
         {/* Providers */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {CORE_PROVIDERS.map(slug => (
-            <ProviderCard key={slug} status={statuses[slug]} loading={loading} icon={PROVIDER_ICONS[slug]} />
+            <ProviderCard key={slug} status={statuses[slug]} loading={loading} />
           ))}
         </div>
 

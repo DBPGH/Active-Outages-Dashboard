@@ -5,7 +5,6 @@ export default function ConnectWisePage() {
     <ProviderDetailPage
       slug="connectwise"
       providerName="ConnectWise"
-      icon={<span>🔧</span>}
       statusPageUrl="https://status.connectwise.com"
     />
   );

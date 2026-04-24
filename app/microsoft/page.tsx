@@ -5,7 +5,6 @@ export default function MicrosoftPage() {
     <ProviderDetailPage
       slug="microsoft"
       providerName="Microsoft 365"
-      icon={<span>🪟</span>}
       statusPageUrl="https://status.microsoft.com"
     />
   );

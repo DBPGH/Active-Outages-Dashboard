@@ -5,7 +5,6 @@ export default function ThreadPage() {
     <ProviderDetailPage
       slug="thread"
       providerName="Thread"
-      icon={<span>🧵</span>}
       statusPageUrl="https://status.getthread.com"
     />
   );

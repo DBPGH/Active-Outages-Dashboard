@@ -5,7 +5,6 @@ export default function AWSPage() {
     <ProviderDetailPage
       slug="aws"
       providerName="Amazon Web Services"
-      icon={<span>☁️</span>}
       statusPageUrl="https://status.aws.amazon.com"
     />
   );

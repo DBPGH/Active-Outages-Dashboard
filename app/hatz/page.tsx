@@ -5,7 +5,6 @@ export default function HatzPage() {
     <ProviderDetailPage
       slug="hatz"
       providerName="Hatz.ai"
-      icon={<span>🤖</span>}
       statusPageUrl="https://status.hatz.ai"
     />
   );

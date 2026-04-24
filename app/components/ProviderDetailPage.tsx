@@ -9,12 +9,11 @@ import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 interface Props {
   slug: string;
   providerName: string;
-  icon: React.ReactNode;
   statusPageUrl: string;
   note?: string;
 }
 
-export default function ProviderDetailPage({ slug, providerName, icon, statusPageUrl, note }: Props) {
+export default function ProviderDetailPage({ slug, providerName, statusPageUrl, note }: Props) {
   const [status, setStatus] = useState<ProviderStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +47,6 @@ export default function ProviderDetailPage({ slug, providerName, icon, statusPag
             </Link>
             <span className="text-gray-700">/</span>
             <div className="flex items-center gap-2">
-              <span className="text-xl">{icon}</span>
               <span className="font-semibold">{providerName}</span>
             </div>
           </div>
@@ -62,9 +60,6 @@ export default function ProviderDetailPage({ slug, providerName, icon, statusPag
           <div className={`rounded-2xl border ${cfg.borderColor} ${cfg.bgColor} p-6 mb-8`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gray-800 flex items-center justify-center text-3xl border border-gray-700/50">
-                  {icon}
-                </div>
                 <div>
                   <h1 className="text-xl font-bold text-white">{providerName}</h1>
                   <div className={`flex items-center gap-2 mt-1 ${cfg.textColor}`}>

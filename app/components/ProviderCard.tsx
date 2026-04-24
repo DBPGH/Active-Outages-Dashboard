@@ -6,10 +6,9 @@ import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 interface Props {
   status: ProviderStatus | null;
   loading: boolean;
-  icon: React.ReactNode;
 }
 
-export default function ProviderCard({ status, loading, icon }: Props) {
+export default function ProviderCard({ status, loading }: Props) {
   if (loading || !status) {
     return (
       <div className="relative rounded-xl border border-gray-700/50 bg-gray-900/60 p-4 animate-pulse">
@@ -44,9 +43,6 @@ export default function ProviderCard({ status, loading, icon }: Props) {
 
         <div className="relative flex items-start justify-between mb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center text-lg border border-gray-700/50">
-              {icon}
-            </div>
             <div>
               <h2 className="text-white font-semibold text-sm leading-tight">{status.provider}</h2>
               <div className={`flex items-center gap-1.5 mt-0.5 ${cfg.textColor}`}>

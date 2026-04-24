@@ -5,7 +5,6 @@ export default function CloudflarePage() {
     <ProviderDetailPage
       slug="cloudflare"
       providerName="Cloudflare"
-      icon={<span>🌐</span>}
       statusPageUrl="https://www.cloudflarestatus.com"
     />
   );
