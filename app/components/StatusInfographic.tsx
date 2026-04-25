@@ -39,7 +39,7 @@ const STATS = [
     numColor:   'text-red-500 dark:text-red-400',
     barColor:   'bg-red-400',
     borderColor:'border-red-500/30',
-    bgColor:    'bg-red-500/10',
+    bgColor:    '',
   },
 ] as const;
 
