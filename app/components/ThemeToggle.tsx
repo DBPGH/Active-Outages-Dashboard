@@ -27,7 +27,7 @@ export default function ThemeToggle() {
       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700/50 text-xs text-gray-600 dark:text-gray-300 transition-colors"
       aria-label="Toggle light/dark mode"
     >
-      {isDark ? 'Light mode' : 'Dark mode'}
+      Howard's Button
     </button>
   );
 }
