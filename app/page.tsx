@@ -65,7 +65,7 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-6 py-4">
         {/* Summary banner */}
         {!loading && (
-          <div className={`rounded-xl border ${overallCfg.borderColor} ${overallCfg.bgColor} px-5 py-4 mb-4`}>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-900/60 px-5 py-4 mb-4">
             <div>
               <StatusInfographic
                 operational={allStatuses.filter(s => s.severity === 'operational').length}
