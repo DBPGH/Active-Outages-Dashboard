@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import ProviderCard from './components/ProviderCard';
 import RefreshTimer from './components/RefreshTimer';
 import ThemeToggle from './components/ThemeToggle';
+import StatusHistoryChart, { StatusSnapshot } from './components/StatusHistoryChart';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 
 const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz', 'godaddy', 'networksolutions', '3cx'];
@@ -14,9 +15,10 @@ const INITIAL_STATE = Object.fromEntries(ALL_PROVIDERS.map(p => [p, null])) as R
 
 
 export default function Dashboard() {
-  const [statuses, setStatuses] = useState<Record<string, ProviderStatus | null>>(INITIAL_STATE);
-  const [loading, setLoading]   = useState(true);
+  const [statuses, setStatuses]   = useState<Record<string, ProviderStatus | null>>(INITIAL_STATE);
+  const [loading, setLoading]     = useState(true);
   const [lastUpdated, setLastUpdated] = useState('');
+  const [history, setHistory]     = useState<StatusSnapshot[]>([]);
 
   const fetchAll = useCallback(async () => {
     const results = await Promise.allSettled(
@@ -29,6 +31,17 @@ export default function Dashboard() {
       next[ALL_PROVIDERS[i]] = result.status === 'fulfilled' ? result.value : null;
     });
     setStatuses(next);
+
+    const fresh = Object.values(next).filter(Boolean) as ProviderStatus[];
+    const snapshot: StatusSnapshot = {
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      operational:    fresh.filter(s => s.severity === 'operational').length,
+      degraded:       fresh.filter(s => s.severity === 'degraded').length,
+      partial_outage: fresh.filter(s => s.severity === 'partial_outage').length,
+      major_outage:   fresh.filter(s => s.severity === 'major_outage').length,
+    };
+    setHistory(prev => [...prev.slice(-20), snapshot]);
+
     setLastUpdated(new Date().toISOString());
     setLoading(false);
   }, []);
@@ -65,32 +78,20 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-6 py-4">
         {/* Summary banner */}
         {!loading && (
-          <div className={`rounded-xl border ${overallCfg.borderColor} ${overallCfg.bgColor} px-5 py-3 mb-4 flex items-center justify-between`}>
-            <div className="flex items-center gap-3">
+          <div className={`rounded-xl border ${overallCfg.borderColor} ${overallCfg.bgColor} px-5 py-4 mb-4 flex items-center gap-6`}>
+            <div className="flex items-center gap-3 shrink-0">
               <div className={`w-3 h-3 rounded-full ${overallCfg.dotColor} ${worstSeverity !== 'operational' ? 'animate-pulse' : ''}`} />
               <div>
                 <p className={`font-semibold ${overallCfg.textColor}`}>{overallCfg.label}</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {totalIssues === 0
-                    ? 'All monitored services are operating normally'
-                    : `${totalIssues} active ${totalIssues === 1 ? 'issue' : 'issues'} across monitored services`}
+                    ? 'All services operational'
+                    : `${totalIssues} active ${totalIssues === 1 ? 'issue' : 'issues'}`}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              {/* Legend */}
-              <div className="hidden sm:flex flex-wrap gap-2">
-                {(['operational', 'degraded', 'partial_outage', 'major_outage'] as const).map(s => {
-                  const c = SEVERITY_CONFIG[s];
-                  return (
-                    <div key={s} className={`flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full border ${c.borderColor} ${c.bgColor}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${c.dotColor}`} />
-                      <span className={c.textColor}>{c.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-              <div className={`text-4xl font-bold ${overallCfg.textColor}`}>{totalIssues}</div>
+            <div className="flex-1 h-24">
+              <StatusHistoryChart data={history} />
             </div>
           </div>
         )}
