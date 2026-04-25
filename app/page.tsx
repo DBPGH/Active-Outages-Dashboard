@@ -66,19 +66,8 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-6 py-4">
         {/* Summary banner */}
         {!loading && (
-          <div className={`rounded-xl border ${overallCfg.borderColor} ${overallCfg.bgColor} px-5 py-4 mb-4 flex items-center gap-6`}>
-            <div className="flex items-center gap-3 shrink-0">
-              <div className={`w-3 h-3 rounded-full ${overallCfg.dotColor} ${worstSeverity !== 'operational' ? 'animate-pulse' : ''}`} />
-              <div>
-                <p className={`font-semibold ${overallCfg.textColor}`}>{overallCfg.label}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {totalIssues === 0
-                    ? 'All services operational'
-                    : `${totalIssues} active ${totalIssues === 1 ? 'issue' : 'issues'}`}
-                </p>
-              </div>
-            </div>
-            <div className="flex-1">
+          <div className={`rounded-xl border ${overallCfg.borderColor} ${overallCfg.bgColor} px-5 py-4 mb-4`}>
+            <div>
               <StatusInfographic
                 operational={allStatuses.filter(s => s.severity === 'operational').length}
                 degraded={allStatuses.filter(s => s.severity === 'degraded').length}
