@@ -47,15 +47,22 @@ export default function StatusInfographic({ operational, degraded, partial_outag
   const counts: Record<string, number> = { operational, degraded, partial_outage, major_outage };
 
   return (
-    <div className="flex flex-col gap-2 justify-center h-full">
+    <div className="flex flex-col gap-2">
       <div className="grid grid-cols-4 gap-2">
         {STATS.map(s => (
           <div
             key={s.key}
-            className={`rounded-lg border ${s.borderColor} ${s.bgColor} px-2 py-2 text-center`}
+            className={`rounded-lg border ${s.borderColor} ${s.bgColor} px-3 py-2.5 flex items-center gap-2.5`}
           >
-            <div className={`text-2xl font-bold leading-none ${s.numColor}`}>{counts[s.key]}</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-tight">{s.label}</div>
+            <span className={`text-3xl font-bold tabular-nums leading-none ${s.numColor}`}>
+              {counts[s.key]}
+            </span>
+            <div className="flex flex-col min-w-0">
+              <span className={`w-1.5 h-1.5 rounded-full ${s.barColor} mb-1 flex-shrink-0`} />
+              <span className="text-xs text-gray-500 dark:text-gray-400 leading-tight whitespace-nowrap">
+                {s.label}
+              </span>
+            </div>
           </div>
         ))}
       </div>
