@@ -5,7 +5,7 @@ export default function NetworkSolutionsPage() {
     <ProviderDetailPage
       slug="networksolutions"
       providerName="Network Solutions"
-      statusPageUrl="https://status.internetpro.net/status/all"
+      statusPageUrl="https://pulse.networksolutions.com"
     />
   );
 }

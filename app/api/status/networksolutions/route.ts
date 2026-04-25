@@ -1,85 +1,53 @@
 import { Severity, Incident } from '@/lib/types';
 
-function overallSeverity(incidents: Incident[]): Severity {
-  if (incidents.length === 0) return 'operational';
-  if (incidents.some(i => i.impact === 'major_outage'))   return 'major_outage';
-  if (incidents.some(i => i.impact === 'partial_outage')) return 'partial_outage';
-  return 'degraded';
+function mapImpact(impact: string): Severity {
+  switch ((impact || '').toLowerCase()) {
+    case 'critical': return 'major_outage';
+    case 'major':    return 'partial_outage';
+    case 'minor':    return 'degraded';
+    default:         return 'operational';
+  }
 }
 
 export async function GET() {
   try {
-    const [configRes, heartbeatRes] = await Promise.all([
-      fetch('https://status.internetpro.net/api/status-page/all', {
-        headers: { 'User-Agent': 'OutageDashboard/1.0' },
-        cache: 'no-store',
-      }),
-      fetch('https://status.internetpro.net/api/status-page/heartbeat/all', {
-        headers: { 'User-Agent': 'OutageDashboard/1.0' },
-        cache: 'no-store',
-      }),
-    ]);
+    const res = await fetch('https://pulse.networksolutions.com/api/v2/summary.json', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+      },
+      cache: 'no-store',
+    });
 
-    if (!configRes.ok || !heartbeatRes.ok) throw new Error('HTTP error');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-    const [config, heartbeat] = await Promise.all([configRes.json(), heartbeatRes.json()]);
+    const data = await res.json();
 
-    // Build monitor ID → name map from group list
-    const monitorNames: Record<number, string> = {};
-    for (const group of (config.publicGroupList || [])) {
-      for (const monitor of (group.monitorList || [])) {
-        monitorNames[monitor.id] = monitor.name;
-      }
-    }
-
-    const incidents: Incident[] = [];
-
-    // Surface monitors that are currently DOWN (status=2)
-    for (const [idStr, beats] of Object.entries(heartbeat.heartbeatList || {})) {
-      const latest = (beats as any[])[0];
-      if (!latest || latest.status !== 2) continue;
-
-      const id = Number(idStr);
-      const name = monitorNames[id] || `Monitor ${id}`;
-      incidents.push({
-        id: idStr,
-        name,
-        status: 'investigating',
-        impact: 'major_outage',
-        createdAt: latest.time ? new Date(latest.time).toISOString() : new Date().toISOString(),
-        updatedAt: latest.time ? new Date(latest.time).toISOString() : new Date().toISOString(),
-        affectedServices: [name],
-        updates: latest.msg
-          ? [{ id: `${idStr}-0`, status: 'investigating', body: latest.msg, createdAt: new Date().toISOString() }]
-          : [],
-        url: 'https://status.internetpro.net/status/all',
-      });
-    }
-
-    // Also surface any active posted incidents
-    for (const inc of (config.incidents || [])) {
-      if (!inc.active) continue;
-      incidents.push({
-        id: String(inc.id),
-        name: inc.title,
-        status: 'investigating',
-        impact: 'partial_outage' as Severity,
-        createdAt: inc.createdDate || new Date().toISOString(),
-        updatedAt: inc.lastUpdatedDate || inc.createdDate || new Date().toISOString(),
-        affectedServices: [],
-        updates: inc.content
-          ? [{ id: `inc-${inc.id}`, status: 'investigating', body: inc.content, createdAt: inc.createdDate || new Date().toISOString() }]
-          : [],
-        url: 'https://status.internetpro.net/status/all',
-      });
-    }
+    const activeIncidents: Incident[] = (data.incidents || [])
+      .filter((i: any) => i.status !== 'resolved')
+      .map((incident: any) => ({
+        id: incident.id,
+        name: incident.name,
+        status: incident.status,
+        impact: mapImpact(incident.impact),
+        createdAt: incident.created_at,
+        updatedAt: incident.updated_at,
+        affectedServices: (incident.components || []).map((c: any) => c.name),
+        updates: (incident.incident_updates || []).map((u: any) => ({
+          id: u.id,
+          status: u.status,
+          body: u.body,
+          createdAt: u.created_at,
+        })),
+        url: incident.shortlink || `https://pulse.networksolutions.com/incidents/${incident.id}`,
+      }));
 
     return Response.json({
       provider: 'Network Solutions',
       slug: 'networksolutions',
-      severity: overallSeverity(incidents),
-      activeCount: incidents.length,
-      incidents,
+      severity: mapImpact(data.status?.indicator || 'none'),
+      activeCount: activeIncidents.length,
+      incidents: activeIncidents,
       lastUpdated: new Date().toISOString(),
     });
   } catch {
