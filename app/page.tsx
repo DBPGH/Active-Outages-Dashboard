@@ -6,7 +6,7 @@ import RefreshTimer from './components/RefreshTimer';
 import ThemeToggle from './components/ThemeToggle';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 
-const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz', 'godaddy', 'networksolutions'];
+const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz', 'godaddy', 'networksolutions', '3cx'];
 const ALL_PROVIDERS    = [...CORE_PROVIDERS];
 const REFRESH_INTERVAL = 60;
 
