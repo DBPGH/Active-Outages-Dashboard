@@ -27,7 +27,6 @@ export default function ThemeToggle() {
       aria-label="Toggle light/dark mode"
       className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700/50 transition-colors"
     >
-      <span className="text-sm leading-none">{isDark ? '🌙' : '☀️'}</span>
       <div
         className={`relative w-8 h-4 rounded-full transition-colors duration-200 ${
           isDark ? 'bg-blue-600' : 'bg-gray-300'
