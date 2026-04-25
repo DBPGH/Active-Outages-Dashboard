@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import ProviderCard from './components/ProviderCard';
 import RefreshTimer from './components/RefreshTimer';
 import ThemeToggle from './components/ThemeToggle';
-import StatusHistoryChart, { StatusSnapshot } from './components/StatusHistoryChart';
+import StatusInfographic from './components/StatusInfographic';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 
 const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz', 'godaddy', 'networksolutions', '3cx'];
@@ -15,10 +15,9 @@ const INITIAL_STATE = Object.fromEntries(ALL_PROVIDERS.map(p => [p, null])) as R
 
 
 export default function Dashboard() {
-  const [statuses, setStatuses]   = useState<Record<string, ProviderStatus | null>>(INITIAL_STATE);
-  const [loading, setLoading]     = useState(true);
+  const [statuses, setStatuses] = useState<Record<string, ProviderStatus | null>>(INITIAL_STATE);
+  const [loading, setLoading]   = useState(true);
   const [lastUpdated, setLastUpdated] = useState('');
-  const [history, setHistory]     = useState<StatusSnapshot[]>([]);
 
   const fetchAll = useCallback(async () => {
     const results = await Promise.allSettled(
@@ -31,17 +30,6 @@ export default function Dashboard() {
       next[ALL_PROVIDERS[i]] = result.status === 'fulfilled' ? result.value : null;
     });
     setStatuses(next);
-
-    const fresh = Object.values(next).filter(Boolean) as ProviderStatus[];
-    const snapshot: StatusSnapshot = {
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      operational:    fresh.filter(s => s.severity === 'operational').length,
-      degraded:       fresh.filter(s => s.severity === 'degraded').length,
-      partial_outage: fresh.filter(s => s.severity === 'partial_outage').length,
-      major_outage:   fresh.filter(s => s.severity === 'major_outage').length,
-    };
-    setHistory(prev => [...prev.slice(-20), snapshot]);
-
     setLastUpdated(new Date().toISOString());
     setLoading(false);
   }, []);
@@ -90,8 +78,14 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
-            <div className="flex-1 h-24">
-              <StatusHistoryChart data={history} />
+            <div className="flex-1">
+              <StatusInfographic
+                operational={allStatuses.filter(s => s.severity === 'operational').length}
+                degraded={allStatuses.filter(s => s.severity === 'degraded').length}
+                partial_outage={allStatuses.filter(s => s.severity === 'partial_outage').length}
+                major_outage={allStatuses.filter(s => s.severity === 'major_outage').length}
+                total={allStatuses.length}
+              />
             </div>
           </div>
         )}
