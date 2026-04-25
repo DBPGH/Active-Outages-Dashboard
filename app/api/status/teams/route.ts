@@ -14,7 +14,7 @@ export async function GET() {
     );
 
     return Response.json({
-      provider: 'Microsoft 365',
+      provider: 'Teams',
       slug: 'teams',
       severity: overallSeverity(incidents),
       activeCount: incidents.length,
@@ -24,7 +24,7 @@ export async function GET() {
     });
   } catch {
     return Response.json({
-      provider: 'Microsoft 365',
+      provider: 'Teams',
       slug: 'teams',
       severity: 'operational' as Severity,
       activeCount: 0,
