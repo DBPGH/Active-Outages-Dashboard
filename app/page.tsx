@@ -7,7 +7,7 @@ import ThemeToggle from './components/ThemeToggle';
 import StatusInfographic from './components/StatusInfographic';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 
-const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz', 'godaddy', 'networksolutions', '3cx'];
+const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz', 'godaddy', 'networksolutions', '3cx', 'azure', 'teams', 'sharepoint'];
 const ALL_PROVIDERS    = [...CORE_PROVIDERS];
 const REFRESH_INTERVAL = 60;
 
@@ -53,7 +53,6 @@ export default function Dashboard() {
       <header className="border-b border-gray-200 dark:border-gray-800/60 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-2.5 h-2.5 rounded-full ${overallCfg.dotColor}`} />
             <h1 className="text-lg font-semibold tracking-tight">Service Status Dashboard</h1>
           </div>
           <div className="flex items-center gap-3">
