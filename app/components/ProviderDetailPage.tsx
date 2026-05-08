@@ -40,6 +40,7 @@ export default function ProviderDetailPage({ slug, providerName, statusPageUrl, 
       <header className="border-b border-gray-200 dark:border-gray-800/60 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Link
               href="/"
               className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm flex items-center gap-1.5"
@@ -52,7 +53,6 @@ export default function ProviderDetailPage({ slug, providerName, statusPageUrl, 
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
             <RefreshTimer interval={60} onRefresh={fetchStatus} lastUpdated={status?.lastUpdated} />
           </div>
         </div>
