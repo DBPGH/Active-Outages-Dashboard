@@ -53,8 +53,8 @@ export default function Dashboard() {
       <header className="border-b border-gray-200 dark:border-gray-800/60 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ThemeToggle />
             <h1 className="text-lg font-semibold tracking-tight">Service Status Dashboard</h1>
+            <ThemeToggle />
           </div>
           <div className="flex items-center gap-3">
             <RefreshTimer interval={REFRESH_INTERVAL} onRefresh={fetchAll} lastUpdated={lastUpdated} />
