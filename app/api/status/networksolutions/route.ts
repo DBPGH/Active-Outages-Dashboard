@@ -58,7 +58,7 @@ export async function GET() {
       activeCount: 0,
       incidents: [],
       lastUpdated: new Date().toISOString(),
-      error: 'Unable to fetch Network Solutions status',
+      error: 'Status page blocked by Cloudflare — check directly',
     });
   }
 }

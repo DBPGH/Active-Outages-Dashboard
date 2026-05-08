@@ -135,7 +135,7 @@ export default function ProviderDetailPage({ slug, providerName, statusPageUrl, 
           </div>
         )}
 
-        {!loading && status && status.incidents.length === 0 && (
+        {!loading && status && status.incidents.length === 0 && !status.error && (
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-8 text-center">
             <div className="text-3xl mb-3">✓</div>
             <p className="text-emerald-400 font-medium">No active incidents</p>

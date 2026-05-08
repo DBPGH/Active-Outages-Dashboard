@@ -6,6 +6,7 @@ export default function NetworkSolutionsPage() {
       slug="networksolutions"
       providerName="Network Solutions"
       statusPageUrl="https://pulse.networksolutions.com"
+      note="This provider's status page uses Cloudflare bot protection that blocks automated fetches. If status shows unavailable, please check the official status page directly."
     />
   );
 }
