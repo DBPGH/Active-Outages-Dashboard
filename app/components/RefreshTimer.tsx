@@ -47,7 +47,7 @@ export default function RefreshTimer({ interval, onRefresh, lastUpdated }: Props
         className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700/50 text-xs text-gray-600 dark:text-gray-300 transition-colors disabled:opacity-50"
       >
         <span className={`${refreshing ? 'animate-spin' : ''}`}>↻</span>
-        <span>{refreshing ? 'Refreshing…' : `Refresh in ${countdown}s`}</span>
+        <span>{refreshing ? 'Refreshing…' : 'Refresh'}</span>
         {/* Progress ring */}
         <svg width="14" height="14" viewBox="0 0 14 14" className="flex-shrink-0">
           <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" strokeOpacity="0.2" strokeWidth="2" />
