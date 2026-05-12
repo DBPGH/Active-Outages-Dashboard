@@ -62,30 +62,28 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-4">
+      <main className="max-w-screen-2xl mx-auto px-6 py-3">
         {/* Summary banner */}
         {!loading && (
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-900/60 px-5 py-4 mb-4">
-            <div>
-              <StatusInfographic
-                operational={allStatuses.filter(s => s.severity === 'operational').length}
-                degraded={allStatuses.filter(s => s.severity === 'degraded').length}
-                partial_outage={allStatuses.filter(s => s.severity === 'partial_outage').length}
-                major_outage={allStatuses.filter(s => s.severity === 'major_outage').length}
-                total={allStatuses.length}
-              />
-            </div>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-900/60 px-5 py-3 mb-3">
+            <StatusInfographic
+              operational={allStatuses.filter(s => s.severity === 'operational').length}
+              degraded={allStatuses.filter(s => s.severity === 'degraded').length}
+              partial_outage={allStatuses.filter(s => s.severity === 'partial_outage').length}
+              major_outage={allStatuses.filter(s => s.severity === 'major_outage').length}
+              total={allStatuses.length}
+            />
           </div>
         )}
 
         {/* Providers */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {CORE_PROVIDERS.map(slug => (
             <ProviderCard key={slug} status={statuses[slug]} loading={loading} />
           ))}
         </div>
 
-        <p className="text-center text-xs text-gray-400 dark:text-gray-600 mt-4">
+        <p className="text-center text-xs text-gray-400 dark:text-gray-600 mt-3">
           Data sourced from official provider status pages · Auto-refreshes every {REFRESH_INTERVAL}s
         </p>
       </main>
