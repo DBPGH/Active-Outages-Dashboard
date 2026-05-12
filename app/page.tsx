@@ -48,6 +48,19 @@ export default function Dashboard() {
 
   const overallCfg = SEVERITY_CONFIG[worstSeverity];
 
+  const SEVERITY_RANK: Record<string, number> = {
+    major_outage: 0,
+    partial_outage: 1,
+    degraded: 2,
+    operational: 3,
+  };
+
+  const sortedProviders = [...CORE_PROVIDERS].sort((a, b) => {
+    const rankA = SEVERITY_RANK[statuses[a]?.severity ?? 'operational'] ?? 3;
+    const rankB = SEVERITY_RANK[statuses[b]?.severity ?? 'operational'] ?? 3;
+    return rankA - rankB;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white">
       <header className="border-b border-gray-200 dark:border-gray-800/60 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-10">
@@ -78,7 +91,7 @@ export default function Dashboard() {
 
         {/* Providers */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {CORE_PROVIDERS.map(slug => (
+          {sortedProviders.map(slug => (
             <ProviderCard key={slug} status={statuses[slug]} loading={loading} />
           ))}
         </div>
