@@ -77,7 +77,7 @@ export default function Dashboard() {
         )}
 
         {/* Providers */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {CORE_PROVIDERS.map(slug => (
             <ProviderCard key={slug} status={statuses[slug]} loading={loading} />
           ))}
