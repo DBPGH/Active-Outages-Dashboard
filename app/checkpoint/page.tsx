@@ -4,7 +4,7 @@ export default function CheckpointPage() {
   return (
     <ProviderDetailPage
       slug="checkpoint"
-      providerName="Check Point Harmony"
+      providerName="Checkpoint"
       statusPageUrl="https://status.checkpoint.com"
     />
   );

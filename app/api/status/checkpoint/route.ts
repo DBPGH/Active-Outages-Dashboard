@@ -40,7 +40,7 @@ export async function GET() {
       }));
 
     return Response.json({
-      provider: 'Check Point Harmony',
+      provider: 'Checkpoint',
       slug: 'checkpoint',
       severity: mapImpact(data.status?.indicator || 'none'),
       activeCount: activeIncidents.length,
@@ -49,13 +49,13 @@ export async function GET() {
     });
   } catch {
     return Response.json({
-      provider: 'Check Point Harmony',
+      provider: 'Checkpoint',
       slug: 'checkpoint',
       severity: 'operational' as Severity,
       activeCount: 0,
       incidents: [],
       lastUpdated: new Date().toISOString(),
-      error: 'Unable to fetch Check Point Harmony status',
+      error: 'Unable to fetch Checkpoint status',
     });
   }
 }
