@@ -7,7 +7,7 @@ import ThemeToggle from './components/ThemeToggle';
 import StatusInfographic from './components/StatusInfographic';
 import { ProviderStatus, SEVERITY_CONFIG } from '@/lib/types';
 
-const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz', 'godaddy', 'networksolutions', '3cx', 'azure', 'teams', 'sharepoint', 'checkpoint', 'mimecast', 'smtp2go', 'm365health'];
+const CORE_PROVIDERS   = ['aws', 'cloudflare', 'bandwidth', 'thread', 'connectwise', 'hatz', 'godaddy', 'networksolutions', '3cx', 'azure', 'checkpoint', 'mimecast', 'smtp2go', 'm365/Exchange', 'm365/microsoftteams', 'm365/SharePoint', 'm365/OneDriveForBusiness', 'm365/OrgLiveID', 'm365/Microsoft365Defender', 'm365/Intune', 'm365/O365Client', 'm365/Copilot', 'm365/PowerBIcom', 'm365/DynamicsCRM'];
 const ALL_PROVIDERS    = [...CORE_PROVIDERS];
 const REFRESH_INTERVAL = 60;
 

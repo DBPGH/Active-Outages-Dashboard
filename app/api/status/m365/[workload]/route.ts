@@ -1,35 +1,33 @@
 import { Severity, Incident } from '@/lib/types';
 import { getHealthOverviews, getActiveIssues, mapGraphStatus, overallSeverity, stripHtml } from '@/lib/m365-graph';
 
-export interface M365Service {
-  name: string;
-  workload: string;
-  status: string;
-  severity: Severity;
-  updatedAt: string;
-}
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ workload: string }> },
+) {
+  const { workload } = await params;
 
-export async function GET() {
   try {
     const [overviews, issues] = await Promise.all([
       getHealthOverviews(),
       getActiveIssues(),
     ]);
 
-    const allServices: M365Service[] = overviews
-      .map((svc: any) => ({
-        name: svc.service,
-        workload: svc.id,
-        status: svc.status,
-        severity: mapGraphStatus(svc.status),
-        updatedAt: svc.lastModifiedDateTime || new Date().toISOString(),
-      }))
-      .sort((a: M365Service, b: M365Service) => {
-        const rank: Record<Severity, number> = { major_outage: 0, partial_outage: 1, degraded: 2, operational: 3 };
-        return rank[a.severity] - rank[b.severity] || a.name.localeCompare(b.name);
+    const svc = overviews.find((s: any) => s.id === workload);
+    if (!svc) {
+      return Response.json({
+        provider: workload,
+        slug: `m365/${workload}`,
+        severity: 'operational' as Severity,
+        activeCount: 0,
+        incidents: [],
+        lastUpdated: new Date().toISOString(),
+        error: `Service "${workload}" not found`,
       });
+    }
 
-    const incidents: Incident[] = issues.map((issue: any) => {
+    const svcIssues = issues.filter((i: any) => i.service === svc.service);
+    const incidents: Incident[] = svcIssues.map((issue: any) => {
       const body = stripHtml(issue.impactDescription || '');
       return {
         id: issue.id,
@@ -47,24 +45,22 @@ export async function GET() {
     });
 
     return Response.json({
-      provider: 'Microsoft Health',
-      slug: 'm365health',
-      severity: overallSeverity(allServices.map(s => s.severity)),
+      provider: svc.service,
+      slug: `m365/${workload}`,
+      severity: overallSeverity(incidents.map(i => i.impact)),
       activeCount: incidents.length,
       incidents,
-      allServices,
       lastUpdated: new Date().toISOString(),
     });
   } catch (err) {
     return Response.json({
-      provider: 'Microsoft Health',
-      slug: 'm365health',
+      provider: workload,
+      slug: `m365/${workload}`,
       severity: 'operational' as Severity,
       activeCount: 0,
       incidents: [],
-      allServices: [],
       lastUpdated: new Date().toISOString(),
-      error: err instanceof Error ? err.message : 'Unable to fetch Microsoft 365 health',
+      error: err instanceof Error ? err.message : 'Unable to fetch service health',
     });
   }
 }
