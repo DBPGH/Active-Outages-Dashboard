@@ -84,7 +84,7 @@ export async function GET() {
 
     const [healthData, issuesData] = await Promise.all([
       graphGet('/admin/serviceAnnouncement/healthOverviews', token),
-      graphGet('/admin/serviceAnnouncement/issues?$filter=isResolved eq false&$expand=posts', token),
+      graphGet('/admin/serviceAnnouncement/issues?$filter=isResolved%20eq%20false', token),
     ]);
 
     // All services sorted: degraded first, then alphabetical
@@ -103,11 +103,7 @@ export async function GET() {
 
     // Active incidents from the issues endpoint
     const incidents: Incident[] = (issuesData.value as any[]).map((issue: any) => {
-      const lastPost = issue.posts?.[issue.posts.length - 1];
-      const body = lastPost?.description?.content
-        ? stripHtml(lastPost.description.content)
-        : stripHtml(issue.impactDescription || '');
-
+      const body = stripHtml(issue.impactDescription || '');
       return {
         id: issue.id,
         name: issue.title,
@@ -117,7 +113,7 @@ export async function GET() {
         updatedAt: issue.lastModifiedDateTime || new Date().toISOString(),
         affectedServices: [issue.service],
         updates: body
-          ? [{ id: lastPost?.id || '1', status: issue.status, body, createdAt: lastPost?.createdDateTime || '' }]
+          ? [{ id: '1', status: issue.status, body, createdAt: issue.lastModifiedDateTime || '' }]
           : [],
         url: 'https://admin.microsoft.com/adminportal/home#/servicehealth',
       };
