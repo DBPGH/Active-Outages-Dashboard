@@ -1,5 +1,4 @@
 import { Severity, Incident } from '@/lib/types';
-import { fetchCloudMicrosoftPost, mapMacStatus, overallSeverity } from '@/lib/microsoft-helpers';
 
 export interface M365Service {
   name: string;
@@ -7,94 +6,133 @@ export interface M365Service {
   status: string;
   severity: Severity;
   updatedAt: string;
-  title?: string;
-  message?: string;
 }
 
-function svcToIncident(svc: M365Service, id: string): Incident {
-  return {
-    id,
-    name: svc.title || `${svc.name} — ${svc.status}`,
-    status: svc.status,
-    impact: svc.severity,
-    createdAt: svc.updatedAt,
-    updatedAt: svc.updatedAt,
-    affectedServices: [svc.name],
-    updates: svc.message
-      ? [{ id: '1', status: svc.status, body: svc.message, createdAt: svc.updatedAt }]
-      : [],
-    url: 'https://status.cloud.microsoft',
-  };
+// In-memory token cache — avoids a round-trip on every request
+let cachedToken: { value: string; expiresAt: number } | null = null;
+
+async function getAccessToken(): Promise<string> {
+  const now = Date.now();
+  if (cachedToken && cachedToken.expiresAt > now + 60_000) return cachedToken.value;
+
+  const tenantId = process.env.MS_TENANT_ID;
+  const clientId = process.env.MS_CLIENT_ID;
+  const clientSecret = process.env.MS_CLIENT_SECRET;
+
+  if (!tenantId || !clientId || !clientSecret) {
+    throw new Error('MS_TENANT_ID, MS_CLIENT_ID, and MS_CLIENT_SECRET must be set');
+  }
+
+  const res = await fetch(
+    `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        client_id: clientId,
+        client_secret: clientSecret,
+        scope: 'https://graph.microsoft.com/.default',
+      }).toString(),
+      cache: 'no-store',
+    },
+  );
+
+  if (!res.ok) throw new Error(`Token request failed: HTTP ${res.status}`);
+  const data = await res.json();
+
+  cachedToken = { value: data.access_token, expiresAt: now + data.expires_in * 1000 };
+  return cachedToken.value;
 }
 
-function cleanHtml(html: string): string {
-  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+async function graphGet(path: string, token: string) {
+  const res = await fetch(`https://graph.microsoft.com/v1.0${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Graph API ${path} failed: HTTP ${res.status}`);
+  return res.json();
+}
+
+function mapStatus(status: string): Severity {
+  switch (status) {
+    case 'serviceInterruption':    return 'major_outage';
+    case 'serviceDegradation':
+    case 'extendedRecovery':       return 'partial_outage';
+    case 'investigating':
+    case 'restoringService':
+    case 'verifyingService':
+    case 'investigationSuspended': return 'degraded';
+    default:                       return 'operational';
+  }
+}
+
+function overallSeverity(services: M365Service[]): Severity {
+  if (services.some(s => s.severity === 'major_outage'))   return 'major_outage';
+  if (services.some(s => s.severity === 'partial_outage')) return 'partial_outage';
+  if (services.some(s => s.severity === 'degraded'))       return 'degraded';
+  return 'operational';
+}
+
+function stripHtml(html: string): string {
+  return (html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 export async function GET() {
   try {
-    const [macPost, consumerServices] = await Promise.all([
-      fetchCloudMicrosoftPost('api/posts/mac'),
-      fetchCloudMicrosoftPost('api/posts/m365Consumer'),
+    const token = await getAccessToken();
+
+    const [healthData, issuesData] = await Promise.all([
+      graphGet('/admin/serviceAnnouncement/healthOverviews', token),
+      graphGet('/admin/serviceAnnouncement/issues?$filter=isResolved eq false&$expand=posts', token),
     ]);
 
-    const allServices: M365Service[] = [];
-    const incidents: Incident[] = [];
+    // All services sorted: degraded first, then alphabetical
+    const allServices: M365Service[] = (healthData.value as any[])
+      .map((svc: any) => ({
+        name: svc.service,
+        workload: svc.id,
+        status: svc.status,
+        severity: mapStatus(svc.status),
+        updatedAt: svc.lastModifiedDateTime || new Date().toISOString(),
+      }))
+      .sort((a, b) => {
+        const rank: Record<Severity, number> = { major_outage: 0, partial_outage: 1, degraded: 2, operational: 3 };
+        return rank[a.severity] - rank[b.severity] || a.name.localeCompare(b.name);
+      });
 
-    // Enterprise overall health
-    const entSeverity: Severity =
-      macPost?.Status && macPost.Status !== 'Available'
-        ? mapMacStatus(macPost.Status)
-        : 'operational';
+    // Active incidents from the issues endpoint
+    const incidents: Incident[] = (issuesData.value as any[]).map((issue: any) => {
+      const lastPost = issue.posts?.[issue.posts.length - 1];
+      const body = lastPost?.description?.content
+        ? stripHtml(lastPost.description.content)
+        : stripHtml(issue.impactDescription || '');
 
-    const entMessage = macPost?.Message ? cleanHtml(macPost.Message) : undefined;
-
-    allServices.push({
-      name: 'Microsoft 365 (Enterprise)',
-      workload: 'M365Enterprise',
-      status: macPost?.Status || 'Available',
-      severity: entSeverity,
-      updatedAt: macPost?.LastUpdatedTime || new Date().toISOString(),
-      title: macPost?.Title || undefined,
-      message: entMessage,
-    });
-
-    if (entSeverity !== 'operational') {
-      incidents.push(svcToIncident(allServices[0], macPost.Id || 'mac-enterprise'));
-    }
-
-    // Per-service consumer health
-    for (const raw of (consumerServices as any[])) {
-      const severity = mapMacStatus(raw.Status);
-      const message = raw.Message ? cleanHtml(raw.Message) : undefined;
-
-      const svc: M365Service = {
-        name: raw.ServiceDisplayName,
-        workload: raw.ServiceWorkloadName,
-        status: raw.Status,
-        severity,
-        updatedAt: raw.LastUpdatedTime || new Date().toISOString(),
-        title: raw.Title || undefined,
-        message,
+      return {
+        id: issue.id,
+        name: issue.title,
+        status: issue.status,
+        impact: mapStatus(issue.status),
+        createdAt: issue.startDateTime || new Date().toISOString(),
+        updatedAt: issue.lastModifiedDateTime || new Date().toISOString(),
+        affectedServices: [issue.service],
+        updates: body
+          ? [{ id: lastPost?.id || '1', status: issue.status, body, createdAt: lastPost?.createdDateTime || '' }]
+          : [],
+        url: 'https://admin.microsoft.com/adminportal/home#/servicehealth',
       };
-
-      allServices.push(svc);
-
-      if (severity !== 'operational') {
-        incidents.push(svcToIncident(svc, raw.ServiceWorkloadName || `consumer-${raw.ServiceDisplayName}`));
-      }
-    }
+    });
 
     return Response.json({
       provider: 'Microsoft Health',
       slug: 'm365health',
-      severity: overallSeverity(incidents),
+      severity: overallSeverity(allServices),
       activeCount: incidents.length,
       incidents,
       allServices,
       lastUpdated: new Date().toISOString(),
     });
-  } catch {
+  } catch (err) {
     return Response.json({
       provider: 'Microsoft Health',
       slug: 'm365health',
@@ -103,7 +141,7 @@ export async function GET() {
       incidents: [],
       allServices: [],
       lastUpdated: new Date().toISOString(),
-      error: 'Unable to fetch Microsoft 365 health',
+      error: err instanceof Error ? err.message : 'Unable to fetch Microsoft 365 health',
     });
   }
 }

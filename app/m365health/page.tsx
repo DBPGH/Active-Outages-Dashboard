@@ -129,9 +129,6 @@ export default function M365HealthPage() {
                   <div key={svc.workload} className="flex items-center justify-between px-4 py-3">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{svc.name}</p>
-                      {svc.title && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{svc.title}</p>
-                      )}
                     </div>
                     <div className={`flex items-center gap-1.5 ml-4 flex-shrink-0 ${scfg.textColor}`}>
                       <span className={`w-2 h-2 rounded-full ${scfg.dotColor} ${svc.severity !== 'operational' ? 'animate-pulse' : ''}`} />
